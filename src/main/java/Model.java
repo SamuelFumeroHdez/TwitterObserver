@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.TimerTask;
 import java.util.TreeMap;
 
-public class Model extends TimerTask {
+public class Model implements Runnable {
     Twitter twitter;
     private int woeid;
     ArrayList<Trend> trendList = new ArrayList<>();
+    ArrayList<Trend> oldTrendList;
     private static int timeSleep = 10000;
     HashMap<String,Integer> trendVolumeList = new HashMap<>();
+
 
     Model(int woeid){
         ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -69,36 +71,37 @@ public class Model extends TimerTask {
         }
     }
 
+    public ArrayList<Trend> getTrendList(){
+        try {
+            saveTrends();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return this.trendList;
+    }
+
+    public ArrayList<Trend> getOldTrendList(){
+        return this.oldTrendList;
+    }
+
     @Override
     public void run() {
-        boolean change;
-        int cont;
+        try {
+            saveTrends();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
         for(;;){
-            ArrayList<Trend> oldTrendList = this.trendList;
-            HashMap<String,Integer> oldTrendVolumeList = this.trendVolumeList;
-
+            this.oldTrendList = this.trendList;
             try {
                 try {
                     Thread.sleep(timeSleep);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                System.out.println("Empezamos a guardar tweets");
                 saveTrends();
                 saveTrendsVolume();
-                change = false;
-                cont = 0;
-                while(!change && cont<this.trendList.size()){
-                    if(this.trendList.get(cont).getName().equalsIgnoreCase(oldTrendList.get(cont).getName()) ||
-                            this.trendList.get(cont).getTweetVolume() != oldTrendList.get(cont).getTweetVolume()){
-
-                        change = true;
-                    }
-                }
-                if (change){
-                    System.out.println("Nueva lista -> " + this.trendList);
-                }else{
-                    System.out.println("Lista actual -> " + oldTrendList);
-                }
             } catch (TwitterException e) {
                 e.printStackTrace();
             }

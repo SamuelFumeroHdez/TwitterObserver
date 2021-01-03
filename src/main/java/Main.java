@@ -32,14 +32,16 @@ public class Main {
         Thread controllerThread = new Thread(twitterController);
         controllerThread.start();*/
 
-        Trend trend = twitterSpainModel.getTrendList().get(0);
+        /*Trend trend = twitterSpainModel.getTrendList().get(0);
         System.out.println(twitterSpainModel.getTrendList().get(0));
         final String title = "Time Series Management";
         final TimeSeriesChartStrategy demo = new TimeSeriesChartStrategy( title, trend, twitterSpainModel );
         demo.pack( );
         RefineryUtilities.positionFrameRandomly( demo );
         Thread timeSeriesTrendChartThread = new Thread(demo);
-        timeSeriesTrendChartThread.start();
+        timeSeriesTrendChartThread.start();*/
+
+        new MainMenuGuiFrame();
 
 
 
